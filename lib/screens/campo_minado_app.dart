@@ -1,23 +1,59 @@
 import 'package:campo_minado/components/tabuleiro_widget.dart';
+import 'package:campo_minado/models/explosao_exception.dart';
 import 'package:campo_minado/models/tabuleiro.dart';
 import 'package:flutter/material.dart';
 import 'package:campo_minado/components/resultado_widget.dart';
 
 import '../models/campo.dart';
 
-class CampoMinadoApp extends StatelessWidget {
+class CampoMinadoApp extends StatefulWidget {
   const CampoMinadoApp({super.key});
 
+  @override
+  State<CampoMinadoApp> createState() => _CampoMinadoAppState();
+}
+
+class _CampoMinadoAppState extends State<CampoMinadoApp> {
+  bool? _venceu;
+  final Tabuleiro _tabuleiro = Tabuleiro(
+    linhas: 12,
+    colunas: 12,
+    qtdBomba: 3,
+  );
   void _reiniciar() {
-    print('reiniciar...');
+    setState(() {
+      _venceu = null;
+      _tabuleiro.reiniciar();
+    });
   }
 
   void _abrir(Campo campo) {
-    print('abrir...');
+    if (_venceu != null) {
+      return;
+    }
+    setState(() {
+      try {
+        campo.abrir();
+        if (_tabuleiro.resolvido) {
+          _venceu = true;
+        }
+      } on ExplosaoException {
+        _venceu = false;
+        _tabuleiro.revelarBombas();
+      }
+    });
   }
 
   void _alternarMarcacao(Campo campo) {
-    print('alternar marcação...');
+    if (_venceu != null) {
+      return;
+    }
+    setState(() {
+      campo.alternarMarcacao();
+      if (_tabuleiro.resolvido) {
+        _venceu = true;
+      }
+    });
   }
 
   @override
@@ -25,16 +61,12 @@ class CampoMinadoApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: ResultadoWidget(
-          venceu: false,
+          venceu: _venceu,
           onReiniciar: _reiniciar,
         ),
         body: Container(
           child: TabuleiroWidget(
-            tabuleiro: Tabuleiro(
-              linhas: 3,
-              colunas: 3,
-              qtdBomba: 0,
-            ),
+            tabuleiro: _tabuleiro,
             onAbrir: _abrir,
             onAlternarMarcacao: _alternarMarcacao,
           ),
