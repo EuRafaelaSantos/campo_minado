@@ -15,15 +15,12 @@ class CampoMinadoApp extends StatefulWidget {
 
 class _CampoMinadoAppState extends State<CampoMinadoApp> {
   bool? _venceu;
-  final Tabuleiro _tabuleiro = Tabuleiro(
-    linhas: 12,
-    colunas: 12,
-    qtdBomba: 3,
-  );
+  Tabuleiro? _tabuleiro;
+
   void _reiniciar() {
     setState(() {
       _venceu = null;
-      _tabuleiro.reiniciar();
+      _tabuleiro!.reiniciar();
     });
   }
 
@@ -34,12 +31,12 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
     setState(() {
       try {
         campo.abrir();
-        if (_tabuleiro.resolvido) {
+        if (_tabuleiro!.resolvido) {
           _venceu = true;
         }
       } on ExplosaoException {
         _venceu = false;
-        _tabuleiro.revelarBombas();
+        _tabuleiro!.revelarBombas();
       }
     });
   }
@@ -50,10 +47,25 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
     }
     setState(() {
       campo.alternarMarcacao();
-      if (_tabuleiro.resolvido) {
+      if (_tabuleiro!.resolvido) {
         _venceu = true;
       }
     });
+  }
+
+  Tabuleiro _getTabuleiro(double largura, double altura) {
+    if (_tabuleiro == null) {
+      int qtdColunas = 15;
+      double tamanhoCampo = largura / qtdColunas;
+      int qtdLinhas = (altura / tamanhoCampo).floor();
+
+      _tabuleiro = Tabuleiro(
+        linhas: qtdLinhas,
+        colunas: qtdColunas,
+        qtdBomba: 50,
+      );
+    }
+    return _tabuleiro!;
   }
 
   @override
@@ -65,11 +77,17 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
           onReiniciar: _reiniciar,
         ),
         body: Container(
-          child: TabuleiroWidget(
-            tabuleiro: _tabuleiro,
-            onAbrir: _abrir,
-            onAlternarMarcacao: _alternarMarcacao,
-          ),
+          color: Colors.grey,
+          child: LayoutBuilder(builder: (ctx, constraints) {
+            return TabuleiroWidget(
+              tabuleiro: _getTabuleiro(
+                constraints.maxWidth,
+                constraints.maxHeight,
+              ),
+              onAbrir: _abrir,
+              onAlternarMarcacao: _alternarMarcacao,
+            );
+          }),
         ),
       ),
     );
