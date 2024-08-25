@@ -3,7 +3,6 @@ import 'package:campo_minado/models/explosao_exception.dart';
 import 'package:campo_minado/models/tabuleiro.dart';
 import 'package:flutter/material.dart';
 import 'package:campo_minado/components/resultado_widget.dart';
-
 import '../models/campo.dart';
 
 class CampoMinadoApp extends StatefulWidget {
@@ -28,6 +27,7 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
     if (_venceu != null) {
       return;
     }
+
     setState(() {
       try {
         campo.abrir();
@@ -45,6 +45,7 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
     if (_venceu != null) {
       return;
     }
+
     setState(() {
       campo.alternarMarcacao();
       if (_tabuleiro!.resolvido) {
@@ -55,14 +56,14 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
 
   Tabuleiro _getTabuleiro(double largura, double altura) {
     if (_tabuleiro == null) {
-      int qtdColunas = 15;
-      double tamanhoCampo = largura / qtdColunas;
-      int qtdLinhas = (altura / tamanhoCampo).floor();
+      int qtdeColunas = 15;
+      double tamanhoCampo = largura / qtdeColunas;
+      int qtdeLinhas = (altura / tamanhoCampo).floor();
 
       _tabuleiro = Tabuleiro(
-        linhas: qtdLinhas,
-        colunas: qtdColunas,
-        qtdBomba: 50,
+        linhas: qtdeLinhas,
+        colunas: qtdeColunas,
+        qtdeBombas: 50,
       );
     }
     return _tabuleiro!;
@@ -78,16 +79,18 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
         ),
         body: Container(
           color: Colors.grey,
-          child: LayoutBuilder(builder: (ctx, constraints) {
-            return TabuleiroWidget(
-              tabuleiro: _getTabuleiro(
-                constraints.maxWidth,
-                constraints.maxHeight,
-              ),
-              onAbrir: _abrir,
-              onAlternarMarcacao: _alternarMarcacao,
-            );
-          }),
+          child: LayoutBuilder(
+            builder: (ctx, constraints) {
+              return TabuleiroWidget(
+                tabuleiro: _getTabuleiro(
+                  constraints.maxWidth,
+                  constraints.maxHeight,
+                ),
+                onAbrir: _abrir,
+                onAlternarMarcacao: _alternarMarcacao,
+              );
+            },
+          ),
         ),
       ),
     );

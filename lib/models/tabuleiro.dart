@@ -1,34 +1,36 @@
-import 'package:campo_minado/models/campo.dart';
-//import 'package:flutter/foundation.dart';
 import 'dart:math';
+import 'campo.dart';
 
 class Tabuleiro {
   final int linhas;
   final int colunas;
-  final int qtdBomba;
-
+  final int qtdeBombas;
   final List<Campo> _campos = [];
 
   Tabuleiro({
     required this.linhas,
     required this.colunas,
-    required this.qtdBomba,
+    required this.qtdeBombas,
   }) {
-    _criarCampo();
+    _criarCampos();
     _relacionarVizinhos();
     _sortearMinas();
   }
 
   void reiniciar() {
-    _campos.forEach((c) => c.reiniciar);
+    for (var c in _campos) {
+      c.reiniciar();
+    }
     _sortearMinas();
   }
 
   void revelarBombas() {
-    _campos.forEach((c) => c.revelarBomba);
+    for (var c in _campos) {
+      c.revelarBomba();
+    }
   }
 
-  void _criarCampo() {
+  void _criarCampos() {
     for (int l = 0; l < linhas; l++) {
       for (int c = 0; c < colunas; c++) {
         _campos.add(Campo(linha: l, coluna: c));
@@ -47,12 +49,13 @@ class Tabuleiro {
   void _sortearMinas() {
     int sorteadas = 0;
 
-    if (qtdBomba > linhas * colunas) {
+    if (qtdeBombas > linhas * colunas) {
       return;
     }
 
-    while (sorteadas < qtdBomba) {
+    while (sorteadas < qtdeBombas) {
       int i = Random().nextInt(_campos.length);
+
       if (!_campos[i].minado) {
         sorteadas++;
         _campos[i].minar();

@@ -20,7 +20,7 @@ class CampoWidget extends StatelessWidget {
     } else if (campo.aberto && campo.minado) {
       return Image.asset('assets/images/bomba_1.jpeg');
     } else if (campo.aberto) {
-      return Image.asset('assets/images/bomba_$qtdMinas.jpeg');
+      return Image.asset('assets/images/aberto_$qtdMinas.jpeg');
     } else if (campo.marcado) {
       return Image.asset('assets/images/bandeira.jpeg');
     } else {
